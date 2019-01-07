@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFDD71</color>
+    <color name="colorPrimaryDark">#FFCC29</color>
+    <color name="colorAccent">#FFDD71</color>
+
+    <color name="route">#039BE5</color>
+    <color name="routeborder">#01579B</color>
+    <color name="darkGray">#707070</color>
+    <color name="primary1">#8A2F22</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+</resources>

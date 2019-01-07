@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">NP3 Driver</string>
+    <string name="title_activity_main1">NP3 Driver</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="intro">NP3, Raipur\'s most popular mobile app for transportation, integrates city transportation for customers and driver partners onto a mobile technology platform. As one of Raipur\'s fastest growing companies we ensure convenient, transparent and quick service fulfilment using technology to make transportation hassle free for everyone. NP3\'s offerings on its platform ranges from affordable AC cabs on the NP3 Micro range to the superior luxury offering from NP3 Lux as well as localized offerings like the ubiquitous Auto-rickshaws to Shuttle buses for daily commute. Using the NP3 mobile app, users across raipur can conveniently book from over 20 vehicles available to them. We’ve empowered hundreds of thousands of driver-partners as entrepreneurs, by building an ecosystem encompassing financing institutions, car manufacturers, service providers etc. for drivers to grow professionally and personally as well as a consistent earning opportunity for them on the NP3 platform.</string>
+
+</resources>
