@@ -25,21 +25,22 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main1"
             android:theme="@style/AppTheme.NoActionBar">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
-        <activity android:name=".StartPackage.DotsActivity"
-            android:screenOrientation="portrait">
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
 
-        </activity>
-        <activity android:name=".RegistrationPackage.LoginActivity"
-            android:screenOrientation="portrait">
 
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
-        <activity android:name=".StartPackage.SplashActivity"
+        <activity
+            android:name=".StartPackage.DotsActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".RegistrationPackage.LoginActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".StartPackage.SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,12 +48,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".YourRidesActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".EnquiyActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".AboutUsActivity"
-            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".YourRidesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".EnquiyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AboutUsActivity"
+            android:screenOrientation="portrait" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -66,6 +70,13 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <activity android:name=".Main2Activity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
     </application>
 
 </manifest>
