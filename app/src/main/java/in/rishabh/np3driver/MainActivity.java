@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -102,6 +103,11 @@ public class MainActivity extends AppCompatActivity
 
         editor1 = pref1.edit();
 
+        View pop = findViewById(R.id.popup);
+        if (pop.getVisibility()==View.VISIBLE){
+            findViewById(R.id.endRide).setVisibility(View.GONE);
+            ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
+        }
 
 //        FloatingActionButton fab =  findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +136,14 @@ public class MainActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
   //      initViews();
-        getCustomers();
+        Handler handler=new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getCustomers();
+            }
+        },1000);
+
       findViewById(R.id.paymentdone).setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View view) {
@@ -338,12 +351,18 @@ try{
     }
 
     public void getCustomers(){
-        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/checkride?dmobile="+dMobile,
+       try {
+           RequestQueue queue = null;
+           if (queue == null) {
+               queue = Volley.newRequestQueue(getApplicationContext());
+           }
+
+
+        StringRequest postRequest = new StringRequest(Request.Method.GET, "http://139.59.66.55/mobiapp/checkride?dmobile="+dMobile,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        System.out.println("yhi hai response....." + response);
+                    //    System.out.println("yhi hai response....." + response);
                         Gson gson=new Gson();
                         final GetCustomers success=gson.fromJson(response, GetCustomers.class);
                         String result= success.getSuccess();
@@ -452,14 +471,13 @@ try{
                                     @Override
                                     public void onClick(View view) {
                                         Toast.makeText(MainActivity.this, "Otp send successfully", Toast.LENGTH_SHORT).show();
-                                        mMap.clear();
                                         ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
                                         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
                                         StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/sendotp?cmobile="+success.getCustomer_mobile()+"&dmobile="+success.getDriver_mobile()+"&rideid="+success.getRideid(),
                                                 new Response.Listener<String>() {
                                                     @Override
                                                     public void onResponse(String response) {
-                                                        System.out.println("yhi hai response....." + response);
+                                     //                   System.out.println("yhi hai response....." + response);
 
                                                         Gson gson1=new Gson();
                                                         Success success1=gson1.fromJson(response,Success.class);
@@ -467,12 +485,14 @@ try{
                                                         switch(success1.getSuccess()){
                                                             case "success":
                                                                 findViewById(R.id.popup).setVisibility(View.VISIBLE);
+                                                                findViewById(R.id.endRide).setVisibility(View.GONE);
+                                                                ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
                                                                findViewById(R.id.startButton).setOnClickListener(new View.OnClickListener() {
                                                                    @Override
                                                                    public void onClick(View view) {
                                                                        String otp = ((EditText)findViewById(R.id.otp)).getText().toString();
-                                                                       System.out.println(otp);
-                                                                       System.out.println(success.getRideid());
+                                                                  //     System.out.println(otp);
+                                                                   //    System.out.println(success.getRideid());
 //                                                                       Toast.makeText(MainActivity.this, otp+success.getRideid(), Toast.LENGTH_SHORT).show();
                                                                    sendOtp(otp,success.getRideid());
 
@@ -562,6 +582,9 @@ try{
         };
 
         queue.add(postRequest);
+       }catch (Exception e){
+
+       }
     }
     private void initViews() {
         Dexter.withActivity(this)
@@ -621,6 +644,7 @@ try{
 
                         switch (success){
                             case "success":
+                                mMap.clear();
                                 findViewById(R.id.popup).setVisibility(View.GONE);
 
 
@@ -706,6 +730,16 @@ try{
                     public void onResponse(String response) {
 
                              System.out.println("thats it....." + response);
+
+                        String str1 = response;
+                        String str2 = "[]";
+
+                        boolean isEqual = str1.equals(str2);
+
+//                        if (isEqual==true){
+//                            ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
+//                        }
+
                         try{
                             Gson gson=new Gson();
                             RideStatus rideStatus=gson.fromJson(response,RideStatus.class);
@@ -821,31 +855,55 @@ try{
             switch (travelmode){
                 case "0":
 //                    Double price=35+(distance*6)+2;
-                    amount=String.valueOf(Math.round(35+(Math.round(Double.valueOf(price)*6))+(Math.round(Double.valueOf(price)*3*2)))+(0.05*(35+(Math.round(Double.valueOf(price)*6))+(Math.round(Double.valueOf(price)*3*2)))));
+                    double total=35+Double.valueOf(price)*6+Double.valueOf(price)*3*2;
+                    double gst=(0.05*total);
+                    double a=Math.round(total+gst);
+                  //  double a = Math.round(35 + (Double.valueOf(price) * 6)) + (Double.valueOf(price) * 3 * 2) + (0.05 * (35 + (Double.valueOf(price) * 6)) + (Double.valueOf(price) * 3 * 2));
+                    amount=String.valueOf(Math.round(a));
 
 //                    amount=String.valueOf(35+(Math.round(Double.valueOf(price)*6))+(Math.round(Double.valueOf(price)*3*2)));
                     break;
                 case "1":
 //                    Double price=45+(distance*10)+2;
-                    amount=String.valueOf(Math.round(45+(Math.round(Double.valueOf(price)*10))+(Math.round(Double.valueOf(price)*3*2)))+(0.05*(45+(Math.round(Double.valueOf(price)*10))+(Math.round(Double.valueOf(price)*3*2)))));
+                    double total1=45+Double.valueOf(price)*10+Double.valueOf(price)*3*2;
+                    double gst1=(0.05*total1);
+                    double b=Math.round(total1+gst1);
+                  //  amount=String.valueOf(Math.round(45+(Math.round(Double.valueOf(price)*10))+(Math.round(Double.valueOf(price)*3*2)))+(0.05*(45+(Math.round(Double.valueOf(price)*10))+(Math.round(Double.valueOf(price)*3*2)))));
+                  //  double b=Math.round(45+(Double.valueOf(price)*10))+(Double.valueOf(price)*3*2)+(0.05*(45+(Double.valueOf(price)*10))+(Double.valueOf(price)*3*2));
+                    amount=String.valueOf(Math.round(b));
 
 //                    amount=String.valueOf(45+(Math.round(Double.valueOf(price)*10))+(Math.round(Double.valueOf(price)*3*2)));
                     break;
                 case "2":
 //                    Double price=55+(distance*12)+2;
-                    amount=String.valueOf(Math.round(55+(Math.round(Double.valueOf(price)*12))+(Math.round(Double.valueOf(price)*3*2)))+(0.05*(55+(Math.round(Double.valueOf(price)*12))+(Math.round(Double.valueOf(price)*3*2)))));
+                   // amount=String.valueOf(Math.round(55+(Math.round(Double.valueOf(price)*12))+(Math.round(Double.valueOf(price)*3*2)))+(0.05*(55+(Math.round(Double.valueOf(price)*12))+(Math.round(Double.valueOf(price)*3*2)))));
+                    double total2=55+Double.valueOf(price)*12+Double.valueOf(price)*3*2;
+                    double gst2=(0.05*total2);
+                    double c=Math.round(total2+gst2);
+                   // double c=Math.round(55+(Double.valueOf(price)*12))+(Double.valueOf(price)*3*2)+(0.05*(55+(Double.valueOf(price)*12))+(Double.valueOf(price)*3*2));
+                    amount=String.valueOf(Math.round(c));
 
 //                    amount=String.valueOf(55+Math.round(Double.valueOf(price)*12)+(Math.round(Double.valueOf(price)*3*2)));
                     break;
                 case "3":
 //                    Double price=10+(distance*4)+1.5;
-                    amount=String.valueOf(Math.round(10+(Math.round(Double.valueOf(price)*4))+(Math.round(Double.valueOf(price)*2*1.5)))+(0.05*(10+(Math.round(Double.valueOf(price)*4))+(Math.round(Double.valueOf(price)*2*1.5)))));
+                //    amount=String.valueOf(Math.round(10+(Math.round(Double.valueOf(price)*4))+(Math.round(Double.valueOf(price)*2*1.5)))+(0.05*(10+(Math.round(Double.valueOf(price)*4))+(Math.round(Double.valueOf(price)*2*1.5)))));
+                    double total3=10+Double.valueOf(price)*4+Double.valueOf(price)*2*1.5;
+                    double gst3=(0.05*total3);
+                    double d=Math.round(total3+gst3);
+                    //double d=Math.round(10+(Double.valueOf(price)*4))+(Double.valueOf(price)*2*1.5)+(0.05*(10+(Double.valueOf(price)*4))+(Double.valueOf(price)*2*1.5));
+                    amount=String.valueOf(Math.round(d));
 
 //                    amount=String.valueOf(10+(Math.round(Double.valueOf(price)*4))+(Math.round(Double.valueOf(price)*2*1.5)));
                     break;
                 case "4":
 //                    Double price=10+(distance*3)+1.5;
-                    amount=String.valueOf(Math.round(10+(Math.round(Double.valueOf(price)*3))+(Math.round(Double.valueOf(price)*2*1.5)))+(0.05*(10+(Math.round(Double.valueOf(price)*3))+(Math.round(Double.valueOf(price)*2*1.5)))));
+              //      amount=String.valueOf(Math.round(10+(Math.round(Double.valueOf(price)*3))+(Math.round(Double.valueOf(price)*2*1.5)))+(0.05*(10+(Math.round(Double.valueOf(price)*3))+(Math.round(Double.valueOf(price)*2*1.5)))));
+                    double total4=10+Double.valueOf(price)*3+Double.valueOf(price)*2*1.5;
+                    double gst4=(0.05*total4);
+                    double e=Math.round(total4+gst4);
+                   // double e=Math.round(10+(Double.valueOf(price)*3))+(Double.valueOf(price)*2*1.5)+(0.05*(10+(Double.valueOf(price)*3))+(Double.valueOf(price)*2*1.5));
+                    amount=String.valueOf(Math.round(e));
 
 //                    amount=String.valueOf(10+(Math.round(Double.valueOf(price)*3))+(Math.round(Double.valueOf(price)*2*1.5)));
                     break;
