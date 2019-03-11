@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#FFDD71</color>
     <color name="colorPrimaryDark">#FFCC29</color>
-    <color name="colorAccent">#FFDD71</color>
+    <color name="colorAccent">#FFCC29</color>
 
     <color name="route">#039BE5</color>
     <color name="routeborder">#01579B</color>

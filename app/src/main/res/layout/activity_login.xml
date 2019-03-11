@@ -38,6 +38,7 @@
                 android:layout_height="wrap_content">
 
                 <EditText
+                    android:drawableLeft="@drawable/ic_phone_android_black_24dp"
                     android:inputType="phone"
                     android:textStyle="bold"
                     android:text=""
@@ -60,6 +61,7 @@
                 android:layout_height="wrap_content">
 
                 <EditText
+                    android:drawableLeft="@drawable/ic_lock_outline_black_24dp"
                     android:textStyle="bold"
                     android:text=""
                     android:id="@+id/password"
@@ -79,7 +81,7 @@
                 android:id="@+id/login"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:fontFamily="sans-serif-thin"
                 android:text="Login"
                 android:background="@color/colorPrimary"

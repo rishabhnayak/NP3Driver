@@ -33,22 +33,24 @@
             android:layout_height="wrap_content" />
         <LinearLayout
             android:gravity="center_vertical"
-            android:padding="15dp"
+            android:paddingTop="15dp"
+            android:layout_marginBottom="-10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/paymentdone"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:text="Payment Done"
-                android:background="@color/colorPrimary"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+            <!--<Button-->
+                <!--android:id="@+id/paymentdone"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:textSize="18sp"-->
+                <!--android:text="Payment Done"-->
+                <!--android:background="@color/colorPrimary"-->
+                <!--android:layout_weight="1"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="wrap_content" />-->
             <!--<TextView-->
+                <!--android:gravity="center_horizontal"-->
                 <!--android:layout_margin="5dp"-->
-                <!--android:text="Or"-->
-                <!--android:layout_width="wrap_content"-->
+                <!--android:text="Payment done"-->
+                <!--android:layout_width="match_parent"-->
                 <!--android:layout_height="wrap_content" />-->
             <!--<Button-->
                 <!--android:textSize="18sp"-->
@@ -58,6 +60,37 @@
                 <!--android:layout_weight="1"-->
                 <!--android:layout_width="0dp"-->
                 <!--android:layout_height="wrap_content" />-->
+        </LinearLayout>
+        <LinearLayout
+            android:layout_below="@+id/amount_card"
+            android:gravity="center_vertical"
+            android:padding="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/cash"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:text="Cash paid"
+                android:background="@color/colorPrimary"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:visibility="invisible"
+                android:layout_margin="5dp"
+                android:text="Or"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/online"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:text="Online Paid"
+                android:background="@color/colorPrimary"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
 

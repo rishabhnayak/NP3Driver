@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -24,6 +25,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main1"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
 
             <!-- <intent-filter> -->
@@ -35,10 +37,10 @@
         </activity>
         <activity
             android:name=".StartPackage.DotsActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".RegistrationPackage.LoginActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".StartPackage.SplashActivity"
             android:screenOrientation="portrait">
@@ -49,15 +51,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".YourRidesActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".EnquiyActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".AboutUsActivity"
             android:screenOrientation="portrait" />
-
+        <activity
+            android:name=".RidesActivity"
+            android:screenOrientation="portrait" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -70,13 +71,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".Main2Activity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>

@@ -10,11 +10,28 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="Import" />
         <item
+            android:icon="@drawable/ic_home_black_24dp"
             android:id="@+id/nav_home"
             android:title="Home" />
         <item
+            android:icon="@drawable/ic_history_black_24dp"
             android:id="@+id/nav_rides"
             android:title="Your Rides" />
+        <item
+            android:icon="@drawable/ic_airline_seat_recline_normal_black_24dp"
+            android:id="@+id/nav_golive"
+            android:title="Go Live" />
+        <item
+            android:icon="@drawable/ic_event_busy_black_24dp"
+            android:id="@+id/action_settings"
+            android:title="Go Silent"
+            />
+        <item
+            android:visible="false"
+            android:icon="@drawable/ic_event_busy_black_24dp"
+            android:id="@+id/action_account"
+            android:title="Profile"
+            />
         <item
             android:visible="false"
             android:id="@+id/nav_gallery"
@@ -35,19 +52,28 @@
     <item android:title="Communicate">
         <menu>
             <item
+                android:icon="@drawable/ic_comment_black_24dp"
+
                 android:id="@+id/nav_feedback"
                 android:title="Enquiry/Feedback" />
             <item
+
                 android:visible="false"
                 android:id="@+id/nav_share"
                 android:title="Share" />
             <item
+                android:icon="@drawable/ic_exit_to_app_black_24dp"
+
                 android:id="@+id/nav_send"
                 android:title="Logout" />
             <item
+                android:icon="@drawable/ic_call_black_24dp"
+
                 android:id="@+id/nav_emergencycall"
                 android:title="Emergency Call" />
             <item
+                android:icon="@drawable/ic_info_black_24dp"
+                android:visible="true"
                 android:id="@+id/nav_aboutus"
                 android:title="About Us" />
             <item

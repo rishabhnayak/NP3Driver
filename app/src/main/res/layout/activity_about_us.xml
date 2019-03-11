@@ -1,53 +1,350 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/side_nav_bar">
+    android:background="@drawable/gradient"
+    >
 
-    <android.support.v7.widget.CardView
+    <LinearLayout
         android:layout_margin="16dp"
-        app:cardCornerRadius="5dp"
-        app:cardElevation="5dp"
-        app:cardBackgroundColor="@color/white"
+        android:gravity="center_horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <ImageView
-                        android:layout_margin="5dp"
-                        android:src="@mipmap/ic_launcher"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp" />
-                    <TextView
-                        android:textColor="@color/black"
-                        android:layout_gravity="center_vertical"
-                        android:textStyle="bold"
-                        android:fontFamily="sans-serif-condensed"
-                        android:textSize="23sp"
-                        android:text="About NP3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-       
-             <TextView
-                 android:text="@string/intro"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content" />
-            </LinearLayout>
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_marginTop="15dp"
+            android:src="@mipmap/ic_launcher"
+            android:layout_width="130dp"
+            android:layout_height="130dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        </ScrollView>
-    </android.support.v7.widget.CardView>
+        <TextView
+            android:id="@+id/website"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/policy"
+            android:layout_centerHorizontal="true"
+            android:text="www.np3.in"
+            android:textColor="#0052a6"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/policy"
+            android:layout_centerHorizontal="true"
+            android:text="contact@np3.in"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/policy"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/policy"
+            android:layout_centerHorizontal="true"
+            android:text="Privacy Policy"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/terms"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:text="Terms and Conditions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 
-</LinearLayout>
+
+    <!--<android.support.v7.widget.CardView-->
+    <!--android:layout_margin="16dp"-->
+    <!--app:cardCornerRadius="5dp"-->
+    <!--app:cardElevation="5dp"-->
+    <!--app:cardBackgroundColor="@color/white"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+    <!--<ScrollView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+    <!--<LinearLayout-->
+    <!--android:orientation="vertical"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+    <!--<LinearLayout-->
+    <!--android:orientation="horizontal"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content">-->
+    <!--<ImageView-->
+    <!--android:layout_margin="5dp"-->
+    <!--android:src="@mipmap/ic_launcher"-->
+    <!--android:layout_width="40dp"-->
+    <!--android:layout_height="40dp" />-->
+    <!--<TextView-->
+    <!--android:textColor="@color/black"-->
+    <!--android:layout_gravity="center_vertical"-->
+    <!--android:textStyle="bold"-->
+    <!--android:fontFamily="sans-serif-condensed"-->
+    <!--android:textSize="23sp"-->
+    <!--android:text="About NP3"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content" />-->
+    <!--</LinearLayout>-->
+
+    <!--<TextView-->
+    <!--android:text="@string/intro"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content" />-->
+    <!--</LinearLayout>-->
+
+    <!--</ScrollView>-->
+    <!--</android.support.v7.widget.CardView>-->
+
+
+</RelativeLayout>
+    <!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--android:orientation="vertical"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:background="@color/white"-->
+    <!--&gt;-->
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:orientation="vertical">-->
+
+    <!--<TextView-->
+    <!--android:layout_marginTop="20dp"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="About Us"-->
+    <!--android:textSize="20dp"-->
+    <!--android:textStyle="bold"-->
+    <!--android:gravity="center_horizontal"-->
+    <!--android:textColor="#000"-->
+    <!--android:fontFamily="sans-serif" />-->
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="2dp"-->
+    <!--android:background="@color/gray_btn_bg_color"-->
+    <!--android:layout_margin="10dp"/>-->
+    <!--<TextView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="What makes us different?"-->
+    <!--android:textSize="18dp"-->
+    <!--android:layout_marginLeft="15dp"-->
+    <!--android:textColor="#000"-->
+    <!--android:fontFamily="sans-serif" />-->
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="2dp"-->
+    <!--android:background="@color/grayLight"-->
+    <!--android:layout_margin="10dp"/>-->
+    <!--<TextView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:maxLines="10"-->
+    <!--android:text=" 1. We have the best deals\n 2. We have a bigger selection of deals\n 3. Our App is easy to use"-->
+    <!--android:textSize="18dp"-->
+    <!--android:layout_marginLeft="15dp"-->
+    <!--android:textColor="#000"-->
+    <!--android:fontFamily="sans-serif" />-->
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="2dp"-->
+    <!--android:background="@color/grayLight"-->
+    <!--android:layout_margin="10dp"/>-->
+    <!--<TextView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:maxLines="10"-->
+
+    <!--android:text="We make a special effort to get a large number of outlets since everyone loves deals on food and dining! We don’t clutter the App with deals that aren’t good."-->
+    <!--android:textSize="14dp"-->
+    <!--android:layout_marginLeft="15dp"-->
+    <!--android:textColor="#000"-->
+    <!--android:fontFamily="sans-serif" />-->
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="2dp"-->
+    <!--android:background="@color/grayLight"-->
+    <!--android:layout_margin="10dp"/>-->
+    <!--<TextView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:maxLines="10"-->
+
+    <!--android:text="We have a careful screening process to make sure deals are good enough before we post them on the App. This makes it easy for you to find what you are looking for quickly."-->
+    <!--android:textSize="14dp"-->
+    <!--android:layout_marginLeft="15dp"-->
+    <!--android:textColor="#000"-->
+    <!--android:fontFamily="sans-serif" />-->
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="2dp"-->
+    <!--android:background="@color/grayLight"-->
+    <!--android:layout_margin="10dp"/>-->
+    <!--<TextView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:maxLines="10"-->
+
+    <!--android:text="Our deals are shipped to your mailing address. Be sure to check the details of the offer to find out if a deal can be printed or if it will be mailed to you."-->
+    <!--android:textSize="14dp"-->
+    <!--android:layout_marginLeft="15dp"-->
+    <!--android:textColor="#000"-->
+    <!--android:fontFamily="sans-serif" />-->
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="2dp"-->
+    <!--android:background="@color/grayLight"-->
+    <!--android:layout_margin="10dp"/>-->
+    <!--<TextView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:maxLines="10"-->
+
+    <!--android:text="Our print-at-home deals can be printed and used instantly after you purchase them. Some deal Apps don’t allow you to print and use your deal until the following day, but we don’t want to make you wait! We’ve made it so that you can check out our deals before you leave home to eat out or do something fun for the evening."-->
+    <!--android:textSize="14dp"-->
+    <!--android:layout_marginLeft="15dp"-->
+    <!--android:textColor="#000"-->
+    <!--android:fontFamily="sans-serif" />-->
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="2dp"-->
+    <!--android:background="@color/grayLight"-->
+    <!--android:layout_margin="10dp"/>-->
+    <!--<TextView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:maxLines="10"-->
+
+    <!--android:text="We hope you enjoy our App and our deals. If you have any questions or feedback, we’d love to hear from you. Customer service is our top priority!"-->
+    <!--android:textSize="14dp"-->
+    <!--android:layout_marginLeft="15dp"-->
+    <!--android:textColor="#000"-->
+    <!--android:fontFamily="sans-serif" />-->
+
+
+    <!--<android.support.v7.widget.CardView-->
+    <!--android:foreground="?android:attr/selectableItemBackground"-->
+    <!--android:clickable="true"-->
+    <!--android:background="@color/colorPrimary"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_margin="10dp"-->
+    <!--app:cardElevation="2dp"-->
+    <!--app:cardCornerRadius="8dp">-->
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+
+    <!--android:orientation="horizontal">-->
+    <!--<ImageView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center_vertical"-->
+    <!--android:padding="8dp"-->
+    <!--android:src="@drawable/ic_phone_android_black_24dp"/>-->
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:gravity="center"-->
+    <!--android:textSize="18dp"-->
+    <!--android:text="9329798762 | 0771-4020551"-->
+    <!--android:padding="5dp"-->
+    <!--android:textColor="@android:color/darker_gray"/>-->
+    <!--</LinearLayout>-->
+
+    <!--</android.support.v7.widget.CardView>-->
+    <!--<android.support.v7.widget.CardView-->
+    <!--android:foreground="?android:attr/selectableItemBackground"-->
+    <!--android:clickable="true"-->
+    <!--android:id="@+id/bankcardId2"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_margin="10dp"-->
+    <!--app:cardElevation="2dp"-->
+    <!--android:background="@color/colorPrimary"-->
+    <!--app:cardCornerRadius="8dp">-->
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:orientation="horizontal">-->
+    <!--<ImageView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center_vertical"-->
+    <!--android:padding="8dp"-->
+    <!--/>-->
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:paddingLeft="2dp"-->
+    <!--android:textSize="16dp"-->
+    <!--android:text="Shashtri Market, Near Evergreen Chowk, Raipur"-->
+    <!--android:padding="5dp"-->
+    <!--android:textColor="@android:color/darker_gray"/>-->
+    <!--</LinearLayout>-->
+
+    <!--</android.support.v7.widget.CardView>-->
+
+    <!--<android.support.v7.widget.CardView-->
+    <!--android:foreground="?android:attr/selectableItemBackground"-->
+    <!--android:clickable="true"-->
+    <!--android:id="@+id/bankcardId1"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_margin="10dp"-->
+    <!--app:cardElevation="2dp"-->
+    <!--android:background="@color/colorPrimary"-->
+    <!--app:cardCornerRadius="8dp">-->
+
+    <!--<LinearLayout-->
+    <!--android:background="@drawable/custom_ripple"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:orientation="horizontal">-->
+    <!--<ImageView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center_vertical"-->
+    <!--android:padding="8dp"-->
+    <!--android:src="@drawable/ic_email"/>-->
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:paddingLeft="2dp"-->
+    <!--android:textSize="16dp"-->
+    <!--android:text="thebrandprivilegebazaar@gmail.com"-->
+    <!--android:padding="5dp"-->
+    <!--android:textColor="@android:color/darker_gray"/>-->
+    <!--</LinearLayout>-->
+
+    <!--</android.support.v7.widget.CardView>-->
+    <!--</LinearLayout>-->
+    <!--</ScrollView>-->

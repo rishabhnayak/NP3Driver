@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -43,6 +44,7 @@ public class EnquiyActivity extends AppCompatActivity {
                 subject=subjectE.getText().toString();
                 message = messageE.getText().toString();
                 // Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+                getSupportActionBar().setTitle((Html.fromHtml("<font color=\"#5e5e5e\">" + "NP3 Driver" + "</font>")));
                 if(subject.length()==0){
                     subjectE.setError("This Field must not be empty");
                 }else if(message.length()==0){

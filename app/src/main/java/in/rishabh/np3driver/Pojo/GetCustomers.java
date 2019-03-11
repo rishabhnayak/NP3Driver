@@ -14,9 +14,13 @@ public class GetCustomers {
     @SerializedName("rideid")
     @Expose
     private String rideid;
+
     @SerializedName("customer_mobile")
     @Expose
     private String customer_mobile;
+    @SerializedName("customer_name")
+    @Expose
+    private String customer_name;
     @SerializedName("customer_olat")
     @Expose
     private String customer_olat;
@@ -51,6 +55,14 @@ public class GetCustomers {
 
     public String getCustomer_mobile() {
         return customer_mobile;
+    }
+
+    public String getCustomer_name() {
+        return customer_name;
+    }
+
+    public void setCustomer_name(String customer_name) {
+        this.customer_name = customer_name;
     }
 
     public void setCustomer_mobile(String customer_mobile) {

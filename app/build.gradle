@@ -6,8 +6,8 @@ android {
         applicationId "in.rishabh.np3driver"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 16
-        versionName "1.015"
+        versionCode 30
+        versionName "1.030"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

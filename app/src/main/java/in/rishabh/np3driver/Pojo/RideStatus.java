@@ -11,6 +11,18 @@ public class RideStatus {
 
     @SerializedName("cmobile")
     @Expose
+    private String cname;
+
+    public String getCname() {
+        return cname;
+    }
+
+    public void setCname(String cname) {
+        this.cname = cname;
+    }
+
+    @SerializedName("cname")
+    @Expose
     private String cmobile;
     @SerializedName("rideid")
     @Expose

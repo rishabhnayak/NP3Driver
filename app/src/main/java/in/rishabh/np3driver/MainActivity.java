@@ -4,22 +4,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-
-import android.support.v4.app.ActivityCompat;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,8 +36,6 @@ import com.directions.route.Route;
 import com.directions.route.RouteException;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
-import com.github.javiersantos.appupdater.AppUpdater;
-import com.github.javiersantos.appupdater.enums.UpdateFrom;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -48,11 +45,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
@@ -63,13 +55,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+import in.rishabh.np3driver.Pojo.AllStatus;
 import in.rishabh.np3driver.Pojo.GetCustomers;
+import in.rishabh.np3driver.Pojo.Go;
 import in.rishabh.np3driver.Pojo.LatLong;
 import in.rishabh.np3driver.Pojo.RideStatus;
 import in.rishabh.np3driver.RegistrationPackage.LoginActivity;
 import in.rishabh.np3driver.RegistrationPojo.Success;
-
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, RoutingListener {
@@ -88,10 +80,26 @@ public class MainActivity extends AppCompatActivity
     String travelmode;
     SharedPreferences pref1;
     SharedPreferences.Editor editor1;
+    SharedPreferences pref2;
+    SharedPreferences.Editor editor2;
     String amount = "0";
+    RequestQueue queueget,location;
     String distance;
+    int flagotp=0,flaggetcustomer=0;
+    int sum = 0;
     private static final int[] COLORS = new int[]{R.color.route, R.color.routeborder, R.color.colorPrimary, R.color.colorPrimary, R.color.primary_dark_material_light};
     private String rid;
+    private CountDownTimer timer1;
+    private CountDownTimer timer2;
+    private RequestQueue ridestatus;
+    private StringRequest postRequest;
+    private RequestQueue queue;
+    private Gson gson;
+    private RideStatus rideStatus;
+    private GetCustomers success;
+    private Success success1;
+    private CountDownTimer timer3;
+    private String result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +108,10 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         pref1 = getApplicationContext().getSharedPreferences("MyPref", 0);
-
         editor1 = pref1.edit();
+
+        pref2 = getApplicationContext().getSharedPreferences("flagotppref", 0);
+        editor2 = pref2.edit();
 
         View pop = findViewById(R.id.popup);
         if (pop.getVisibility()==View.VISIBLE){
@@ -109,15 +119,23 @@ public class MainActivity extends AppCompatActivity
             ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
         }
 
-//        FloatingActionButton fab =  findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        getSupportActionBar().setTitle((Html.fromHtml("<font color=\"#5e5e5e\">" + "NP3 Driver" + "</font>")));
+        //  System.out.println(String.valueOf(mMap.getMyLocation().getLatitude()));
+        location = Volley.newRequestQueue(getApplicationContext());
 
+        ridestatus = Volley.newRequestQueue(this);
+        findViewById(R.id.cash).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                paymentDone("cash");
+            }
+        });
+        findViewById(R.id.online).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                paymentDone("online");
+            }
+        });
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
 
@@ -143,38 +161,154 @@ public class MainActivity extends AppCompatActivity
                 getCustomers();
             }
         },1000);
-
-      findViewById(R.id.paymentdone).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.cancelRequest).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
+                getCustomers();
+                cancelRide();
+            }
+        });
+      findViewById(R.id.cash).setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View view) {
-
+              paymentDone("cash");
           }
       });
+        findViewById(R.id.online).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                paymentDone("online");
+            }
+        });
+        findViewById(R.id.acceptRequest).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "Otp send successfully", Toast.LENGTH_SHORT).show();
+                ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
+                queue = Volley.newRequestQueue(getApplicationContext());
+                postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/sendotp?cmobile="+success.getCustomer_mobile()+"&dmobile="+success.getDriver_mobile()+"&rideid="+success.getRideid(),
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                //                   System.out.println("yhi hai response....." + response);
 
+                                gson=new Gson();
+                                success1=gson.fromJson(response,Success.class);
+                                switch(success1.getSuccess()){
+                                    case "success":
+                                        flagotp=1;
+
+                                        findViewById(R.id.acceptRequest).setVisibility(View.GONE);
+                                        //   Toast.makeText(MainActivity.this, String.valueOf(flagotp), Toast.LENGTH_SHORT).show();
+                                        editor2.putString("flagotp",String.valueOf(flagotp));
+                                        editor2.commit();
+                                        findViewById(R.id.popup).setVisibility(View.VISIBLE);
+                                        findViewById(R.id.endRide).setVisibility(View.GONE);
+                                        ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
+                                        findViewById(R.id.startButton).setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                String otp = ((EditText)findViewById(R.id.otp)).getText().toString();
+                                                //     System.out.println(otp);
+                                                //    System.out.println(success.getRideid());
+//                                                                       Toast.makeText(MainActivity.this, otp+success.getRideid(), Toast.LENGTH_SHORT).show();
+                                            //    Toast.makeText(MainActivity.this, String.valueOf(otp)+"   "+success.getRideid(), Toast.LENGTH_SHORT).show();
+                                                sendOtp(otp,pref1.getString("rideid", null));
+
+                                            }
+                                        });
+                                        break;
+                                    default:
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                System.out.println("volley error" + error);
+                                // Toast.makeText(getApplicationContext(), "Server Problem please retry", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                );
+
+                queue.add(postRequest);
+            }
+        });
         findViewById(R.id.endRide).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              try{
-                  String lat=pref.getString("olat",null);
-                  String lon=pref.getString("olon",null);
-                  Toast.makeText(MainActivity.this, lat+lon, Toast.LENGTH_SHORT).show();
-              }catch (Exception e){
-
-              }
-
-                findViewById(R.id.endRide).setVisibility(View.GONE);
-                destination=new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude());
-                Toast.makeText(MainActivity.this, "Ride Ended", Toast.LENGTH_SHORT).show();
-                if (lat==mMap.getMyLocation().getLatitude()&&lon==mMap.getMyLocation().getLongitude()){
-                    Toast.makeText(MainActivity.this, "Source and Destination place can't be the same.", Toast.LENGTH_SHORT).show();
-                }else {
                     try {
                         rideEnd();
                     } catch (Exception e) {
-
-                    }
-
                 }}
+        });
+     //   Toast.makeText(this, pref1.getString("rideid", null), Toast.LENGTH_SHORT).show();
+         queueget = Volley.newRequestQueue(getApplicationContext());
+
+        findViewById(R.id.startButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String otp = ((EditText)findViewById(R.id.otp)).getText().toString();
+                RequestQueue test = Volley.newRequestQueue(getApplicationContext());
+                StringRequest test2 = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/enterotp?rideid="+pref1.getString("rideid", null)+"&otp="+otp,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                System.out.println("yhi hai response....." + response);
+                                try {
+                                    Gson gson=new Gson();
+                                    String lat=pref.getString("olat",null);
+                                    String lon=pref.getString("olon",null);
+                                    if (pref.getString("olat",null)!=null){
+                                        origin=new LatLng(Double.valueOf(lat),Double.valueOf(lon));
+                                    }
+                                    else {
+                                        editor1.putString("olat",String.valueOf(mMap.getMyLocation().getLatitude()));
+                                        editor1.putString("olon",String.valueOf(mMap.getMyLocation().getLongitude()));
+                                        editor1.commit();
+                                    }
+
+                                    Success successObject=gson.fromJson(response,Success.class);
+                                    String success=successObject.getSuccess();
+                                    LatLong ll=gson.fromJson(response,LatLong.class);
+                                    cMobile=ll.getCmobile();
+                                    rideid1=ll.getRideid();
+
+                                    switch (success){
+                                        case "success":
+                                            mMap.clear();
+                                            //   Toast.makeText(MainActivity.this, "cleared", Toast.LENGTH_SHORT).show();
+                                            editor2.clear();
+                                            editor2.commit();
+                                            findViewById(R.id.popup).setVisibility(View.GONE);
+                                            findViewById(R.id.endRide).setVisibility(View.VISIBLE);
+                                            flaggetcustomer=1;
+                                            ((ExpandableLayout)findViewById(R.id.expandable_layout2)).expand();
+                                            String uri = "http://maps.google.com/maps?saddr="+""+ll.getOlat()+","+ll.getOlon()+""+"&daddr="+""+ll.getDlat()+","+ll.getDlon()+"";
+                                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                                            intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                                            startActivity(intent);
+                                            break;
+                                        default:
+                                            Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }catch (Exception e){
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                System.out.println("volley error" + error);
+                                // Toast.makeText(getApplicationContext(), "Server Problem please retry", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                );
+
+                test.add(test2);
+
+            }
         });
     }
 
@@ -203,9 +337,10 @@ public class MainActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            gosilent();
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -233,9 +368,15 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(getApplicationContext(),LoginActivity.class));
         }
         else if (id == R.id.nav_rides) {
-            startActivity(new Intent(getApplicationContext(),YourRidesActivity.class));
+            startActivity(new Intent(getApplicationContext(),RidesActivity.class));
         }else if (id == R.id.nav_send) {
 
+        }
+        else if (id == R.id.nav_golive) {
+        golive();
+        }
+       else if (id == R.id.action_settings) {
+            gosilent();
         }
         else if (id == R.id.nav_feedback) {
             startActivity(new Intent(getApplicationContext(),EnquiyActivity.class));
@@ -267,12 +408,11 @@ try{
     lat=mMap.getMyLocation().getLatitude();
     lon=mMap.getMyLocation().getLongitude();
     System.out.println(" ihi lat hary"+String.valueOf(mMap.getMyLocation().getLatitude()));
-
 }catch (Exception e){
 
 }
         rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);rlp.setMargins(0,0,30,30);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);rlp.setMargins(0,0,30,400);
         Handler handler=new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -285,46 +425,17 @@ try{
         },3000);
     }
 
-    public void timer(){
 
-
-        timer = new CountDownTimer(3000, 20) {
-
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                try{
-                    sendCurrentlocation();
-                    getCustomers();
-                    Handler handler=new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            rideStatus();
-                        }
-                    },1000);
-                    timer.start();
-                }catch(Exception e){
-                    Log.e("Error", "Error: " + e.toString());
-                }
-            }
-        }.start();
-    }
 
     public void sendCurrentlocation(){
-      //  System.out.println(String.valueOf(mMap.getMyLocation().getLatitude()));
-   try{     RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-       System.out.println(String.valueOf(mMap.getMyLocation().getLatitude())+""+lon);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/driverlocationupdate?driverlon="+mMap.getMyLocation().getLatitude()+"&driverlat="+mMap.getMyLocation().getLongitude()+"&dmobile="+dMobile,
+
+
+     //  System.out.println(String.valueOf(mMap.getMyLocation().getLatitude())+""+lon);
+         postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/driverlocationupdate?driverlon="+mMap.getMyLocation().getLatitude()+"&driverlat="+mMap.getMyLocation().getLongitude()+"&dmobile="+dMobile,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        System.out.println("yhi hai response....." + response);
-
+                 //       System.out.println("yhi hai response....." + response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -334,48 +445,45 @@ try{
                 //        // Toast.makeText(getApplicationContext(), "Server Problem please retry", Toast.LENGTH_SHORT).show();
                     }
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                HashMap<String,String> map=new HashMap<>();
-                //    Toast.makeText(ComplintActivity.this, d_id, Toast.LENGTH_SHORT).show();
+        );
 
-                return map;
-            }
-        };
-
-        queue.add(postRequest);
-    }catch (Exception e){
-
-   }
+        location.add(postRequest);
     }
 
     public void getCustomers(){
        try {
-           RequestQueue queue = null;
-           if (queue == null) {
-               queue = Volley.newRequestQueue(getApplicationContext());
-           }
-
-
-        StringRequest postRequest = new StringRequest(Request.Method.GET, "http://139.59.66.55/mobiapp/checkride?dmobile="+dMobile,
+         postRequest = new StringRequest(Request.Method.GET, "http://139.59.66.55/mobiapp/checkride?dmobile="+dMobile,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                     //    System.out.println("yhi hai response....." + response);
-                        Gson gson=new Gson();
-                        final GetCustomers success=gson.fromJson(response, GetCustomers.class);
-                        String result= success.getSuccess();
+                       gson=new Gson();
+                      success=gson.fromJson(response, GetCustomers.class);
+                        result= success.getSuccess();
 
                         if (success.getCustomer_mobile()==null){
 
                         }else {
-                            ((TextView)findViewById(R.id.customerMobile)).setText("Mobile No."+success.getCustomer_mobile());
+                          try{
+                              ((TextView)findViewById(R.id.customerMobile)).setText(success.getCustomer_mobile());
+                              ((TextView)findViewById(R.id.customerName)).setText(success.getCustomer_name());
+                              findViewById(R.id.call).setOnClickListener(new View.OnClickListener() {
+                                  @Override
+                                  public void onClick(View view) {
+                                      String phone = "+91"+success.getCustomer_mobile();
+                                      Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                                      startActivity(intent);
+                                  }
+                              });
+                          }catch (Exception e){
+
+                          }
+
                         }
 
                         switch (result){
                             case "success" :
-
+                                findViewById(R.id.acceptRequest).setVisibility(View.VISIBLE);
                                 success.getCustomer_dlat();
                                 success.getCustomer_dlon();
                                 success.getCustomer_mobile();
@@ -432,7 +540,7 @@ try{
 
                                                 int minIndex = arrli.indexOf(Collections.min(arrli));
 
-                                             //   Toast.makeText(MainActivity.this, String.valueOf(route.get(0).getDistanceText()), Toast.LENGTH_SHORT).show();
+                                        //      Toast.makeText(MainActivity.this, String.valueOf(route.get(0).getDistanceText()), Toast.LENGTH_SHORT).show();
                                                 System.out.println("ihi haray............." + minIndex);
                                                 PolylineOptions polyOptions = new PolylineOptions();
                                                 polyOptions.color(getResources().getColor(COLORS[1]));
@@ -444,6 +552,11 @@ try{
                                                 polyOptions1.width(9);
                                                 polyOptions1.addAll(route.get(minIndex).getPoints());
                                                 Polyline polylin = mMap.addPolyline(polyOptions1);
+try{
+    senddrivertocustomerdistance(route.get(0).getDistanceText().replace(" km",""),rid);
+}catch (Exception e){
+
+}
 
 
                                             }
@@ -460,97 +573,11 @@ try{
                             }catch (Exception e){
 
                             }
-
-
-
-
-                              //  Toast.makeText(MainActivity.this, "customer coordinates "+success.getCustomer_olat()+" "+success.getCustomer_olon(), Toast.LENGTH_SHORT).show();
-
                                 ((ExpandableLayout)findViewById(R.id.expandable_layout2)).expand();
-                                findViewById(R.id.acceptRequest).setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Toast.makeText(MainActivity.this, "Otp send successfully", Toast.LENGTH_SHORT).show();
-                                        ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
-                                        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-                                        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/sendotp?cmobile="+success.getCustomer_mobile()+"&dmobile="+success.getDriver_mobile()+"&rideid="+success.getRideid(),
-                                                new Response.Listener<String>() {
-                                                    @Override
-                                                    public void onResponse(String response) {
-                                     //                   System.out.println("yhi hai response....." + response);
 
-                                                        Gson gson1=new Gson();
-                                                        Success success1=gson1.fromJson(response,Success.class);
-
-                                                        switch(success1.getSuccess()){
-                                                            case "success":
-                                                                findViewById(R.id.popup).setVisibility(View.VISIBLE);
-                                                                findViewById(R.id.endRide).setVisibility(View.GONE);
-                                                                ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
-                                                               findViewById(R.id.startButton).setOnClickListener(new View.OnClickListener() {
-                                                                   @Override
-                                                                   public void onClick(View view) {
-                                                                       String otp = ((EditText)findViewById(R.id.otp)).getText().toString();
-                                                                  //     System.out.println(otp);
-                                                                   //    System.out.println(success.getRideid());
-//                                                                       Toast.makeText(MainActivity.this, otp+success.getRideid(), Toast.LENGTH_SHORT).show();
-                                                                   sendOtp(otp,success.getRideid());
-
-                                                                   }
-                                                               });
-                                                                break;
-                                                            default:
-                                                        }
-                                                    }
-                                                },
-                                                new Response.ErrorListener() {
-                                                    @Override
-                                                    public void onErrorResponse(VolleyError error) {
-                                                        System.out.println("volley error" + error);
-                                                        // Toast.makeText(getApplicationContext(), "Server Problem please retry", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                }
-                                        ) {
-                                            @Override
-                                            protected Map<String, String> getParams() throws AuthFailureError {
-                                                HashMap<String,String> map=new HashMap<>();
-                                                //    Toast.makeText(ComplintActivity.this, d_id, Toast.LENGTH_SHORT).show();
-                                                return map;
-                                            }
-                                        };
-
-                                        queue.add(postRequest);
-                                    }
-                                });
-                                findViewById(R.id.cancelRequest).setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
-                                        getCustomers();
-                                        cancelRide();
-                                    }
-                                });
-                              //  Toast.makeText(MainActivity.this, "aa gya", Toast.LENGTH_SHORT).show();
                                 break;
                             default:
-                                try {
 
-                                    new
-
-                                            java.util.Timer().schedule(
-                                            new java.util.TimerTask() {
-                                                @Override
-                                                public void run() {
-                                                    try {
-                                                        getCustomers();
-                                                    } catch (Exception e) {
-
-                                                    }
-                                                }
-                                            },
-                                            5000
-                                    );
-                                }catch (Exception E){}
                         }
 
                     }
@@ -558,73 +585,47 @@ try{
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println("volley error" + error);
-                        new java.util.Timer().schedule(
-                                new java.util.TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        getCustomers();
-                                    }
-                                },
-                                5000
-                        );
-                     //   // Toast.makeText(getApplicationContext(), "Server Problem please retry", Toast.LENGTH_SHORT).show();
-
                     }
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                HashMap<String,String> map=new HashMap<>();
-                //    Toast.makeText(ComplintActivity.this, d_id, Toast.LENGTH_SHORT).show();
-                return map;
-            }
-        };
+        ) ;
 
-        queue.add(postRequest);
+        queueget.add(postRequest);
        }catch (Exception e){
 
        }
     }
-    private void initViews() {
-        Dexter.withActivity(this)
-                .withPermissions(android.Manifest.permission.INTERNET,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_NETWORK_STATE).withListener(new MultiplePermissionsListener() {
-            @Override
-            public void onPermissionsChecked(MultiplePermissionsReport report) {
-                Toast.makeText(getApplicationContext(), "checked", Toast.LENGTH_SHORT).show();
-            }
 
-            @Override
-            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {/* ... */}
-        }).check();
+    private void senddrivertocustomerdistance(String replace,String rid) {
 
-    }
-    public void checkLocation(){
-        mMap.getMyLocation().getLongitude();
-        if (String.valueOf(mMap.getMyLocation().getLongitude())==null){
-        checkLocation();
-        }else {
-            locationButton.performClick();
-        }
+
+       postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/customerdistance?rideid="+replace+"&driverTocustomerDistance="+rid,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("volley error" + error);
+                    }
+                }
+
+        )
+        ;
+
+        queue.add(postRequest);
     }
 
-    public void sendOtp(String otp, final String rideid){
-
-        final String rid=rideid,Otp=otp;
-    //    Toast.makeText(this, rid+otp, Toast.LENGTH_SHORT).show();
-        RequestQueue queue = Volley.newRequestQueue(this);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/enterotp?rideid="+rid+"&otp="+Otp,
+    public void sendOtp(String ootp,String rrideid){
+      //  Toast.makeText(this, ootp+"   "+rrideid, Toast.LENGTH_SHORT).show();
+        postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/enterotp?rideid="+rrideid+"&otp="+ootp,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         System.out.println("yhi hai response....." + response);
                       try {
                           Gson gson=new Gson();
-
-
                           String lat=pref.getString("olat",null);
                           String lon=pref.getString("olon",null);
                           if (pref.getString("olat",null)!=null){
@@ -645,11 +646,13 @@ try{
                         switch (success){
                             case "success":
                                 mMap.clear();
+                             //   Toast.makeText(MainActivity.this, "cleared", Toast.LENGTH_SHORT).show();
+                                editor2.clear();
+                                editor2.commit();
                                 findViewById(R.id.popup).setVisibility(View.GONE);
-
-
                                 findViewById(R.id.endRide).setVisibility(View.VISIBLE);
-
+                                flaggetcustomer=1;
+                                ((ExpandableLayout)findViewById(R.id.expandable_layout2)).expand();
                                 String uri = "http://maps.google.com/maps?saddr="+""+ll.getOlat()+","+ll.getOlon()+""+"&daddr="+""+ll.getDlat()+","+ll.getDlon()+"";
                                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
                                 intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
@@ -661,8 +664,7 @@ try{
 //                                editor1.putString("distance",distance.replace(" km",""));
 //                                editor1.putString("dmobile",dMobile);
 //                                editor1.commit();
-                                findViewById(R.id.popup).setVisibility(View.GONE);
-                                Toast.makeText(getApplicationContext(), "Server Error Please Retry", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
                         }
                     }catch (Exception e){
                       }
@@ -675,18 +677,11 @@ try{
                         // Toast.makeText(getApplicationContext(), "Server Problem please retry", Toast.LENGTH_SHORT).show();
                     }
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                HashMap<String,String> map=new HashMap<>();
-
-                //    Toast.makeText(ComplintActivity.this, d_id, Toast.LENGTH_SHORT).show();
-                return map;
-            }
-        };
+        );
 
         queue.add(postRequest);
     }
+
     public void cancelRide(){
 
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -720,39 +715,34 @@ try{
         queue.add(postRequest);
     }
 
-
-
     public void rideStatus(){
-        RequestQueue queue = Volley.newRequestQueue(this);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/checkOngoingRide?dMobile="+dMobile,
+       postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/checkOngoingRide?dMobile="+dMobile,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-                             System.out.println("thats it....." + response);
-
-                        String str1 = response;
-                        String str2 = "[]";
-
-                        boolean isEqual = str1.equals(str2);
-
-//                        if (isEqual==true){
-//                            ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
-//                        }
-
                         try{
-                            Gson gson=new Gson();
-                            RideStatus rideStatus=gson.fromJson(response,RideStatus.class);
+                            gson=new Gson();
+                          rideStatus=gson.fromJson(response,RideStatus.class);
 
                             if (rideStatus.getDmobile().length()==0){
 
                             }else {
                                 ((ExpandableLayout)findViewById(R.id.expandable_layout2)).expand();
-                                ((TextView)findViewById(R.id.customerMobile)).setText(rideStatus.getCmobile());
+                                ((TextView)findViewById(R.id.customerMobile)).setText(rideStatus.getCname());
                                 findViewById(R.id.acceptRequest).setVisibility(View.GONE);
                                 findViewById(R.id.cancelRequest).setVisibility(View.GONE);
                                 findViewById(R.id.endRide).setVisibility(View.VISIBLE);
-//                                ((TextView)findViewById(R.id.customerMobile)).setText(rideStatus.getCmobile());
+                               ((TextView)findViewById(R.id.customerName)).setText(rideStatus.getCmobile());
+                                findViewById(R.id.call).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        String phone = "+91"+rideStatus.getCname();
+                                        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                                        startActivity(intent);
+                                    }
+                                });
+
                             }
                         }catch (Exception e){
 
@@ -763,32 +753,44 @@ try{
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println("volley error" + error);
-                        // Toast.makeText(getApplicationContext(), "Server Problem please retry", Toast.LENGTH_SHORT).show();
                     }
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                HashMap<String,String> map=new HashMap<>();
-                //    Toast.makeText(ComplintActivity.this, d_id, Toast.LENGTH_SHORT).show();
-                return map;
-            }
-        };
+        );
 
-        queue.add(postRequest);
+        ridestatus.add(postRequest);
     }
 
     @Override
     protected void onResume() {
+
+
      try{
+
          timer();
+         timer3();
+         Handler handler=new Handler();
+         handler.postDelayed(new Runnable() {
+             @Override
+             public void run() {
+                 timer2();
+             }
+         },5000);
+
+         String otpvisibility=pref2.getString("flagotp",null);
+      //   Toast.makeText(this, String.valueOf(otpvisibility), Toast.LENGTH_SHORT).show();
+         if (otpvisibility.equals("1")==true){
+             findViewById(R.id.endRide).setVisibility(View.GONE);
+             ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
+             findViewById(R.id.popup).setVisibility(View.VISIBLE);
+
+         }
+
      }catch (Exception e){
 
      }
         super.onResume();
-
     }
+
     public void rideEnd(){
 //        Toast.makeText(this, String.valueOf(origin.longitude+","+origin.longitude), Toast.LENGTH_SHORT).show();
 //        Toast.makeText(this, String.valueOf(destination.longitude+","+destination.longitude), Toast.LENGTH_SHORT).show();
@@ -798,7 +800,8 @@ try{
 
         String lat=pref.getString("olat",null);
         String lon=pref.getString("olon",null);
-
+        destination=new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude());
+        System.out.println(lat+" "+lon+"  "+destination.latitude+" "+destination.longitude);
         ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
         Routing routing = new Routing.Builder()
                 .key("AIzaSyCv_imK5ydtkdWnGJP1Dbt-DT07UdvyDeo")
@@ -830,7 +833,6 @@ try{
                 }
             }
         } catch (Exception e) {
-
         }
 
 
@@ -916,29 +918,20 @@ try{
         ((TextView)findViewById(R.id.amount)).setText("Rs."+amount);
 
 
-
-
-        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/RideEnd?rideid="+pref1.getString("rideid", null)+"&Amount="+amount+"&km="+distance+"&dmobile="+pref1.getString("dmobile", null),
+        Toast.makeText(this, distance, Toast.LENGTH_SHORT).show();
+        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/RideEnd?rideid="+pref1.getString("rideid", null)+"&Amount="+amount+"&km="+distance.replace(" m","").replace(" km","")+"&dmobile="+pref.getString("mobile",null),
         //       StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/RideEnd?rideid="+rideid1+"&Amount="+amount+"&km="+distance.replace(" km","")+"&dmobile="+dMobile,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        System.out.println("yhi hai response....." + response);
-
+                        System.out.println("end ride yhi hai response....." + response);
+                        findViewById(R.id.endRide).setVisibility(View.GONE);
+                        flaggetcustomer=0;
+                        ((ExpandableLayout)findViewById(R.id.expandable_layout2)).collapse();
+                        timer1();
                         findViewById(R.id.payment).setVisibility(View.VISIBLE);
-                        findViewById(R.id.paymentdone).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                findViewById(R.id.payment).setVisibility(View.GONE);
-                                findViewById(R.id.paymentdone).setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        editor1.clear();
-                                        paymentDone();
-                                    }
-                                });
-                            }
-                        });
+
+
 
                     }
 
@@ -967,15 +960,61 @@ try{
 
     }
 
-    public void paymentDone(){
-
+    public void paymentDone(String mode){
+        String pmode=mode;
         RequestQueue queue = Volley.newRequestQueue(this);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/paymentDone?rideid="+rid,
+        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/paymentDone?rideid="+pref1.getString("rideid", null)+"&paymode="+pmode,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
                         System.out.println("yhi hai response....." + response);
+                        findViewById(R.id.payment).setVisibility(View.GONE);
+                        editor1.clear();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("volley error" + error);
+                        // Toast.makeText(getApplicationContext(), "Server Problem please retry", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String,String> map=new HashMap<>();
+                //   Toast.makeText(ComplintActivity.this, d_id, Toast.LENGTH_SHORT).show();
+                return map;
+            }
+        };
+
+        queue.add(postRequest);
+    }
+
+    public void gosilent(){
+//        http://139.59.66.55/mobiapp/gosilent?dmobile=7000889041
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/gosilent?dmobile="+dMobile,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        System.out.println("yhi hai response....." + response);
+                        Go[] success=new Gson().fromJson(response,Go[].class);
+                        List<Go> goList=new ArrayList<Go>(Arrays.asList(success));
+                        try{
+                        if (goList.get(0).getSuccess().equals("failure")==true){
+                            Toast.makeText(MainActivity.this, "Server error please retry", Toast.LENGTH_SHORT).show();
+                        }else {
+                            timer.cancel();
+                            Toast.makeText(MainActivity.this, "Go Silent", Toast.LENGTH_SHORT).show();
+                        }
+                        }catch (Exception e){
+
+                        }
 
                     }
                 },
@@ -998,4 +1037,236 @@ try{
 
         queue.add(postRequest);
     }
+
+    public void golive(){
+//        http://139.59.66.55/mobiapp/golive?dmobile=7000889041
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/golive?dmobile="+dMobile,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        System.out.println("yhi hai response....." + response);
+                        Go[] success=new Gson().fromJson(response,Go[].class);
+                        List<Go> goList=new ArrayList<Go>(Arrays.asList(success));
+                        try{
+                            if (goList.get(0).getSuccess().equals("failure")==true){
+                                Toast.makeText(MainActivity.this, "Server error please retry", Toast.LENGTH_SHORT).show();
+                            }else {
+                                timer.start();
+                                Toast.makeText(MainActivity.this, "Go Live", Toast.LENGTH_SHORT).show();
+                            }
+                        }catch (Exception e){
+
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("volley error" + error);
+                        // Toast.makeText(getApplicationContext(), "Server Problem please retry", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String,String> map=new HashMap<>();
+                //   Toast.makeText(ComplintActivity.this, d_id, Toast.LENGTH_SHORT).show();
+                return map;
+            }
+        };
+
+        queue.add(postRequest);
+    }
+
+    public void timer(){
+
+
+        timer = new CountDownTimer(3000, 20) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                try{
+
+                    if (flaggetcustomer==0){
+                        getCustomers();
+                    }
+                    timer.start();
+                }catch(Exception e){
+                    Log.e("Error", "Error: " + e.toString());
+                }
+            }
+        }.start();
+    }
+
+    public void timer1(){
+
+
+        timer1 = new CountDownTimer(3000, 10000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                getRideStatus();
+                timer1.start();
+            }
+        }.start();
+    }
+
+    public void timer2(){
+
+
+        timer2 = new CountDownTimer(3000, 10000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+         try{
+             sendCurrentlocation();
+         }catch(Exception e){
+                }
+                timer2.start();
+            }
+        }.start();
+    }
+
+    public void timer3(){
+
+
+        timer3 = new CountDownTimer(3000, 20) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                try{
+                    rideStatus();
+                    timer3.start();
+                }catch(Exception e){
+                    Log.e("Error", "Error: " + e.toString());
+                }
+            }
+        }.start();
+    }
+
+    public void getRideStatus(){
+         queue = Volley.newRequestQueue(this);
+        postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/getRideStatus?rideid="+pref1.getString("rideid", null),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        System.out.println("status" + response);
+
+                        final AllStatus[] allStatus= new Gson().fromJson(response,AllStatus[].class);
+                        final List<AllStatus> main_list= new ArrayList<AllStatus>(Arrays.asList(allStatus));
+//                        Active or
+//                        OTP or
+//                        OTPVERIFIED or
+//                        Finished or
+//                        Paid
+
+                        String OTP= "OTP";
+                        String Active= "Active";
+                        String OTPVERIFIED= "OTPVERIFIED";
+                        String Finished= "Finished";
+                        String Paid= "Paid";
+                        boolean isEqual = Paid.equals(main_list.get(0).getStatus());
+
+                        System.out.println(isEqual); //true
+                        if (isEqual==true){
+                            findViewById(R.id.payment).setVisibility(View.GONE);
+                            timer1.cancel();
+                        }
+                        else {
+                            findViewById(R.id.payment).setVisibility(View.VISIBLE);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //             System.out.println("volley error" + error);
+                        //Toast.makeText(getApplicationContext(), "Server Problem please retry", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String,String> map=new HashMap<>();
+
+                //    Toast.makeText(ComplintActivity.this, d_id, Toast.LENGTH_SHORT).show();
+                return map;
+            }
+        };
+
+        queue.add(postRequest);
+    }
+//    public void nav() {
+//
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//        StringRequest postRequest = new StringRequest(Request.Method.POST, "http://139.59.66.55/mobiapp/getuserprofile?cmobile="+dMobile,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        System.out.println("yhi hai response....." + response);
+//
+//                        try{
+//                            ProfilePOJO[] profilePojo = new Gson().fromJson(response, ProfilePOJO[].class);
+//                            List<ProfilePOJO> main_list= new ArrayList<ProfilePOJO>(Arrays.asList(profilePojo));
+//                            Handler handler=new Handler();
+//                            handler.postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//
+//                                }
+//                            },1000);
+//                            ((TextView)findViewById(R.id.nav_name)).setText(main_list.get(0).getName());
+//
+//                            ((TextView)findViewById(R.id.nav_no)).setText(main_list.get(0).getCmobile());
+//
+//                        }catch (Exception e){
+//
+//                        }
+//
+//                    }
+//
+//
+//
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Handler handler=new Handler();
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                nav();
+//                            }
+//                        },5000);
+//                        Toast.makeText(getApplicationContext(), "Please Check Your Internet Connection", Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//        );
+//
+//        queue.add(postRequest);
+//    }
 }
